@@ -20,7 +20,7 @@ function LoginScreen() {
     const {userInfo} = useSelector((state) => state.auth);
 
     const {search} = useLocation();
-    const searchParams = URLSearchParams(search);
+    const searchParams = new URLSearchParams(search);
     const redirect = searchParams.get("redirect") || "/";
 
     useEffect(() => {
@@ -33,6 +33,7 @@ function LoginScreen() {
         e.preventDefault();
         try {
             const res = await login({email,password}).unwrap();
+            console.log(res);
             dispatch(setCredentials({...res,}));
             navigate(redirect);
         } catch (error) {
@@ -67,13 +68,14 @@ function LoginScreen() {
                 >
                 </Form.Control>
             </Form.Group>
-            <Button type='submit' variant='primary' className='mt-2'>
+            <Button type='submit' variant='primary' className='mt-2' disabled={isLoading}>
                 Sign In
             </Button>
+            {isLoading && <Loader />}
         </Form>
         <Row>
             <Col className='py-3'>
-                New Customer? <Link to="/register">Register</Link>
+                New Customer? <Link to={redirect ? `/register?redirect=${redirect}` : "/register"}>Register</Link>
             </Col>
         </Row>
     </FormContainer>
